@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+		<!-- 开启组件扫描 -->
+	<context:component-scan base-package="com.dao"></context:component-scan>
+	
+	<!-- 加载配置文件 -->
+	<context:property-placeholder location="classpath:db.properties"/>
+	
+	<!-- 数据库连接池 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="maxActive" value="10" />
+		<property name="maxIdle" value="5" />
+	</bean>
+	
+		<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+			<!-- 指定mybatis核心配置文件 -->
+			<property name="configLocation" value="classpath:SqlMapConfig.xml"></property>
+			<!-- 指定会话工厂使用的数据源 -->
+			<property name="dataSource" ref="dataSource"></property>
+		</bean>
+	
+	
+	
+	<!-- 批量引入mapper 
+		扫描后引用的时候可以使用类名首字母小写
+	-->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	<!-- 指定要扫描的包的全路径名称，如果有多个，用英文逗号隔开 -->
+		<property name="basePackage" value="com.dao"></property>
+	</bean>
+	
+	</beans>
